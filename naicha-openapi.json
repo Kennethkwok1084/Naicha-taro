@@ -979,6 +979,66 @@
         }
       }
     },
+    "/api/v1/analytics/events": {
+      "post": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "批量上报用户行为埋点",
+        "description": "批量上报用户行为埋点事件,用于分析用户行为、页面访问、业务转化漏斗等。\n    \n    **限制**:\n    - 单次最多10条事件\n    - 每条事件 payload 不超过 8KB\n    - 匿名用户必须提供 X-Session-Id 请求头\n    - 限流: 100次/分钟/IP\n    \n    **幂等性**:\n    基于 event.id (UUID) 主键去重,重复事件会被自动忽略\n    \n    **异步处理**:\n    事件会立即加入Celery队列,由Worker异步批量入库,API立即返回204",
+        "operationId": "batch_report_events_api_v1_analytics_events_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchEventsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/analytics/health": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "埋点系统健康检查",
+        "description": "检查Celery队列积压情况,超过10000条事件告警",
+        "operationId": "analytics_health_api_v1_analytics_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/users/login": {
       "post": {
         "tags": [
@@ -2425,6 +2485,99 @@
           "payment_status"
         ],
         "title": "AdminPaymentMatchResponseSchema"
+      },
+      "AnalyticsEventSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid4",
+            "title": "Id",
+            "description": "事件唯一标识(UUID v4)",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440000"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "event",
+              "page",
+              "user"
+            ],
+            "title": "Type",
+            "description": "事件类型: event(操作)/page(页面)/user(用户属性)"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Name",
+            "description": "事件名称",
+            "examples": [
+              "add_to_cart",
+              "page_view",
+              "pay_success"
+            ]
+          },
+          "timestamp": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Timestamp",
+            "description": "Unix毫秒时间戳",
+            "examples": [
+              1700000000000
+            ]
+          },
+          "payload": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payload",
+            "description": "自定义事件属性(最多30个字段,总大小≤8KB,嵌套≤4层)",
+            "examples": [
+              {
+                "price": 15.0,
+                "productId": 123,
+                "quantity": 2
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "name",
+          "timestamp"
+        ],
+        "title": "AnalyticsEventSchema",
+        "description": "单个埋点事件Schema"
+      },
+      "BatchEventsRequest": {
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/AnalyticsEventSchema"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Events",
+            "description": "事件列表(单次最多10条)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "events"
+        ],
+        "title": "BatchEventsRequest",
+        "description": "批量上报埋点事件请求"
       },
       "CouponApplicabilitySchema": {
         "properties": {

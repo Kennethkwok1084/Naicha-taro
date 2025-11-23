@@ -1,6 +1,12 @@
 # 埋点接口说明
 
-## 问题
+## ✅ 问题已解决 (2025-11-23)
+
+前端 `src/utils/analytics.ts` 中使用的埋点接口 `/api/v1/analytics/events` 已由后端实现并集成。
+
+---
+
+## 原问题记录 (已解决)
 
 前端 `src/utils/analytics.ts` 中使用的埋点接口 `/api/v1/analytics/events` **在后端 OpenAPI 文档中不存在**。
 
@@ -69,12 +75,26 @@ Content-Type: application/json
 }
 ```
 
-## 当前建议
+## ✅ 解决方案 (已实施)
 
-**立即执行**:采用方案一,注释掉实际上报逻辑,保留队列管理和本地日志,等后端接口就绪后再启用。
+**采用方案三**: 后端已实现 `POST /api/v1/analytics/events` 接口
 
-**后续跟进**:在 M2 业务攻坚期之后,与后端对齐埋点需求,实现通用埋点接口。
+### 接口规格
+
+- **路径**: `/api/v1/analytics/events`
+- **方法**: POST
+- **认证**: Bearer Token (可选,支持匿名)
+- **限制**: 单次最多10条事件,每条 payload ≤8KB
+- **幂等性**: 基于 `event.id` (UUID) 去重
+- **响应**: 204 No Content (异步处理)
+
+### 前端适配完成
+
+1. ✅ 取消注释 `import { post }` 和 `ANALYTICS_ENDPOINT`
+2. ✅ 启用真实上报逻辑 `flushAnalyticsQueue()`
+3. ✅ 保留失败重试机制 (队列持久化)
 
 ## 修改时间
 
-2025-11-23
+- 创建: 2025-11-23
+- 解决: 2025-11-23

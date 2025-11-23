@@ -1,6 +1,6 @@
 import Taro, { getCurrentPages } from '@tarojs/taro'
 import * as Sentry from '@sentry/react'
-// import { post } from '@/utils/request' // 暂时注释,等后端接口就绪后启用
+import { post } from '@/utils/request'
 import { getEnvName, getSentryDsn } from '@/config/env'
 
 type AnalyticsEventType = 'event' | 'page' | 'user'
@@ -14,7 +14,7 @@ interface AnalyticsEvent {
 }
 
 const STORAGE_KEY = 'NAICHA_ANALYTICS_QUEUE'
-// const ANALYTICS_ENDPOINT = '/api/v1/analytics/events' // 暂时注释,等后端接口就绪后启用
+const ANALYTICS_ENDPOINT = '/api/v1/analytics/events'
 const BATCH_SIZE = 10
 const FLUSH_INTERVAL = 15_000
 
@@ -134,28 +134,22 @@ export const flushAnalyticsQueue = async () => {
   flushing = true
   
   try {
-    // TODO: 后端暂未实现 /api/v1/analytics/events 接口
-    // 参考文档: docs/analytics-endpoint-issue.md
-    // 暂时只打印日志,不实际上报,避免 404 错误
-    console.log('[analytics] 队列中有', queue.length, '条事件待上报 (后端接口开发中)')
-    if (queue.length > 0) {
-      console.log('[analytics] 事件预览:', queue.slice(0, 3))
-    }
-    
-    // 清空队列,避免无限累积
-    queue = []
-    persistQueue()
-    
-    /* 等后端接口就绪后启用:
+    // 批量上报事件到后端 (每批最多10条)
     while (queue.length) {
       const batch = queue.slice(0, BATCH_SIZE)
+      console.log('[analytics] 上报', batch.length, '条事件')
+      
       await post(ANALYTICS_ENDPOINT, { events: batch }, { showErrorToast: false })
+      
+      // 上报成功后移除已发送事件
       queue = queue.slice(batch.length)
       persistQueue()
     }
-    */
+    
+    console.log('[analytics] 队列刷新完成')
   } catch (err) {
-    console.warn('[analytics] flush failed', err)
+    console.warn('[analytics] 上报失败,将在下次重试', err)
+    // 失败不清空队列,下次会继续尝试
   } finally {
     flushing = false
   }
