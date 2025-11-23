@@ -62,10 +62,10 @@
 
 ### 🏗 基建与公共（Frontend Infra）【11.20–21】
 
-* UniApp 项目初始化（Vite + Vue3 + TS）；`pages.json` 分包规划
-* 网络层封装：`uni.request` 拦截器（Token、Idempotency-Key、错误码）
-* 状态管理：`UserStore`、`ShopStore`、`CartStore`（含本地持久化）
-* UI 组件：TDesign（miniprogram）适配层；规格 Popup、Skeleton、Toast
+* Taro 项目初始化（React + TypeScript）；`app.config.ts` 路由与分包规划
+* 网络层封装：`Taro.request` 拦截器（Token、Idempotency-Key、错误码）
+* 状态管理：Redux Toolkit / Zustand（`UserStore`、`ShopStore`、`CartStore`）+ 本地持久化
+* UI 组件：Taro UI / NutUI 适配层；规格 Popup、Skeleton、Toast
 * 埋点：事件管道与上报（Sentry/自建），日志脱敏
 
 ### 🥤 核心业务（Core Features）【11.22–26】

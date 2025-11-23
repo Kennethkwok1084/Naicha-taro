@@ -1,0 +1,32 @@
+.empty {
+  padding: 80px 24px;
+  text-align: center;
+  color: var(--naicha-muted-color);
+
+  &__icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 24px;
+    border-radius: 50%;
+    background: rgba(192, 96, 44, 0.08);
+  }
+
+  &__title {
+    font-size: 32px;
+    color: var(--naicha-text-color);
+    margin-bottom: 12px;
+  }
+
+  &__desc {
+    font-size: 26px;
+    margin-bottom: 24px;
+  }
+
+  &__action {
+    margin-top: 12px;
+    min-width: 240px;
+  }
+}

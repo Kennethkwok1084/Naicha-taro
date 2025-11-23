@@ -5,7 +5,7 @@
 - Pages live under `src/pages/*` with co-located `index.tsx` and `index.scss`; add new screens as sibling folders to reuse routing conventions.
 - Runtime configuration per target is under `config/` (`dev.ts`, `prod.ts`) with env overrides in `.env.development`, `.env.production`, `.env.test`.
 - Shared type declarations belong in `types/`; docs, proposals, or reference materials in `docs/`.
-
+## Always resposed in Chinese/中文
 ## Build, Test, and Development Commands
 - Install deps with `pnpm install` (lockfile is `pnpm-lock.yaml`; `npm` also works if necessary).
 - Local watch builds: `pnpm dev:weapp` for WeChat; swap `weapp` with `h5`, `alipay`, `tt`, `swan`, `jd`, `qq`, or `harmony-hybrid` to target other platforms.

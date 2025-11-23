@@ -7,5 +7,17 @@ module.exports = {
       ts: true,
       compiler: 'webpack5',
     }]
+  ],
+  plugins: [
+    ['import', {
+      libraryName: '@taroify/core',
+      customName: (name) => `@taroify/core/${name}`,
+      style: false
+    }, '@taroify/core'],
+    ['import', {
+      libraryName: '@taroify/icons',
+      customName: (name) => `@taroify/icons/${name}`,
+      style: false
+    }, '@taroify/icons']
   ]
 }

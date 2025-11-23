@@ -1,0 +1,14 @@
+@import '@taroify/core/index.scss';
+@import '@taroify/icons/index.scss';
+
+:root {
+  --naicha-brand-color: #c0602c;
+  --naicha-text-color: #1d1d1f;
+  --naicha-muted-color: #8a8a8e;
+}
+
+page {
+  background: #fafafa;
+  color: var(--naicha-text-color);
+  font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+}
